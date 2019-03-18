@@ -23,9 +23,13 @@
 #include <iostream>
 #include <list>
 #include <set>
+#include <iterator>
 
 #include "Slide.h"
 #include "Photo.h"
+#include "InterestFactorCalculator.h"
+
+using namespace std;
 
 class Solver
 {
@@ -33,11 +37,13 @@ public:
 	list<Slide> solve(list<Photo> &photos) const;
 	void addHorizontalPhotosToSlides(list<Photo> &photos, list<Slide> &slides) const;
 	void addVerticalPhotosToSlides(list<Photo> &photos, list<Slide> &slides) const;
-	list<Photo, std::allocator<Photo>>::iterator getMatchingVerticalPhotoWithMaxUnitTags(list<Photo> &photos, const Photo &partnerPhoto) const;
+	list<Photo, std::allocator<Photo>>::iterator getMatchingVerticalPhotoWithMaxUnitTags(list<Photo> &photos, const Photo &firstPhoto) const;
 	void sortSlides(list<Slide> &slides) const;
 	void bringSlidesInOrder(list<Slide> &slides, list<Slide> &finishedSlides) const;
 	list<Slide, std::allocator<Slide>>::iterator getMatchingSlide(list<Slide> &slides, const Slide &currentSlide) const;
-	int getInterestFactor(const set<int> &previous, const set<int> &common, const set<int> &next) const;
+
+private:
+	InterestFactorCalculator mInterestFactorCalculator;
 };
 
 #endif //HASHCODE2019_SOLVER_H

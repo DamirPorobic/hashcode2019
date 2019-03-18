@@ -34,20 +34,8 @@ void FileWriter::write(const string &filename, const list<Slide> &slides) const
 			continue;
 		}
 
-		set<int> commonTags;
-		set<int> previousTags;
-		set<int> nextTags;
-		set_intersection(iterator->tags().begin(), iterator->tags().end(), previous->tags().begin(), previous->tags().end(), inserter(commonTags, commonTags.begin()));
-		set_difference(previous->tags().begin(), previous->tags().end(), commonTags.begin(), commonTags.end(), inserter(previousTags, previousTags.begin()));
-		set_difference(iterator->tags().begin(), iterator->tags().end(), commonTags.begin(), commonTags.end(), inserter(nextTags, nextTags.begin()));
-		points += getInterestFactor(previousTags, commonTags, nextTags);
+		points += mInterestFactorCalculator.getInterestFactor(*previous, *iterator);
 	}
 	cout << "Points: " << to_string(points) << endl;
 	outputFile.close();
-}
-
-
-int FileWriter::getInterestFactor(const set<int> &previous, const set<int> &common, const set<int> &next) const
-{
-	return static_cast<int>(min({ previous.size(), common.size(), next.size()}));
 }

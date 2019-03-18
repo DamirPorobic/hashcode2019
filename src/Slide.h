@@ -21,6 +21,7 @@
 #define HASHCODE2019_SLIDE_H
 
 #include <algorithm>
+#include <iterator>
 
 #include "Photo.h"
 #include "Orientation.h"

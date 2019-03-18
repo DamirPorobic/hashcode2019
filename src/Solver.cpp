@@ -43,12 +43,22 @@ void Solver::bringSlidesInOrder(list<Slide> &slides, list<Slide> &finishedSlides
 	auto currentSlide = *iterator;
 	finishedSlides.push_back(currentSlide);
 	slides.erase(iterator);
+	auto initialSize = slides.size();
+	auto lastPercent = 0;
+	auto slideNumber = 0.0;
 
 	while (!slides.empty()) {
 		auto matchingEntry = getMatchingSlide(slides, currentSlide);
 		finishedSlides.push_back(*matchingEntry);
 		currentSlide = *matchingEntry;
 		slides.erase(matchingEntry);
+
+		slideNumber++;
+		auto percent = static_cast<int>(round(slideNumber / initialSize * 100));
+		if(percent != lastPercent) {
+			cout << to_string(percent) << "%" << endl;
+			lastPercent = percent;
+		}
 	}
 }
 
@@ -59,18 +69,11 @@ list<Slide, std::allocator<Slide>>::iterator Solver::getMatchingSlide(list<Slide
 	auto matchingEntry = iterator;
 	while (iterator != slides.end()) {
 
-		if(iterator->tagCount() <= maxInterestFactor) {
+		if(iterator->tagCount() <= maxInterestFactor * 2 + 1) {
 			return matchingEntry;
 		}
 
-		set<int> commonTags;
-		set<int> previousTags;
-		set<int> nextTags;
-		set_intersection(iterator->tags().begin(), iterator->tags().end(), currentSlide.tags().begin(), currentSlide.tags().end(), inserter(commonTags, commonTags.begin()));
-		set_difference(currentSlide.tags().begin(), currentSlide.tags().end(), commonTags.begin(), commonTags.end(), inserter(previousTags, previousTags.begin()));
-		set_difference(iterator->tags().begin(), iterator->tags().end(), commonTags.begin(), commonTags.end(), inserter(nextTags, nextTags.begin()));
-
-		auto interestFactor = getInterestFactor(previousTags, commonTags, nextTags);
+		auto interestFactor = mInterestFactorCalculator.getInterestFactor(*iterator, currentSlide);
 		if (interestFactor > maxInterestFactor) {
 			maxInterestFactor = interestFactor;
 			matchingEntry = iterator;
@@ -109,19 +112,19 @@ void Solver::addVerticalPhotosToSlides(list<Photo> &photos, list<Slide> &slides)
 	}
 }
 
-list<Photo, std::allocator<Photo>>::iterator Solver::getMatchingVerticalPhotoWithMaxUnitTags(list<Photo> &photos, const Photo &partnerPhoto) const
+list<Photo, std::allocator<Photo>>::iterator Solver::getMatchingVerticalPhotoWithMaxUnitTags(list<Photo> &photos, const Photo &firstPhoto) const
 {
 	auto innerIterator = photos.begin();
 	auto maxUniqueTags = innerIterator->tagCount();
 	auto matchingEntry = innerIterator;
 	while (innerIterator != photos.end()) {
-		if(innerIterator->tagCount() + partnerPhoto.tagCount() < maxUniqueTags) {
+		if(maxUniqueTags >= innerIterator->tagCount() + firstPhoto.tagCount()) {
 			return matchingEntry;
 		}
 
 		if (innerIterator->orientation() == Orientation::Vertical) {
 			set<int> mergedTags;
-			set_union(innerIterator->tags().begin(), innerIterator->tags().end(), partnerPhoto.tags().begin(), partnerPhoto.tags().end(), inserter(mergedTags, mergedTags.begin()));
+			set_union(innerIterator->tags().begin(), innerIterator->tags().end(), firstPhoto.tags().begin(), firstPhoto.tags().end(), inserter(mergedTags, mergedTags.begin()));
 
 			if (mergedTags.size() > maxUniqueTags) {
 				maxUniqueTags = static_cast<int>(mergedTags.size());
@@ -130,16 +133,11 @@ list<Photo, std::allocator<Photo>>::iterator Solver::getMatchingVerticalPhotoWit
 		}
 		innerIterator++;
 	}
-	
+
 	return matchingEntry;
 }
 
 void Solver::sortSlides(list<Slide> &slides) const
 {
 	slides.sort([](const Slide & a, const Slide & b) { return a.tagCount() > b.tagCount(); });
-}
-
-int Solver::getInterestFactor(const set<int> &previous, const set<int> &common, const set<int> &next) const
-{
-	return static_cast<int>(min({ previous.size(), common.size(), next.size()}));
 }

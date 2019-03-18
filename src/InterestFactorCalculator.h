@@ -17,44 +17,18 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <iterator>
+#ifndef HASHCODE2019_INTERESTFACTORCALCULATOR_H
+#define HASHCODE2019_INTERESTFACTORCALCULATOR_H
+
 #include "Slide.h"
 
-Slide::Slide(const Photo &photo)
+class InterestFactorCalculator
 {
-	mCountOfPhotos = 1;
-	mPhotos = new Photo[1] {photo};
-	mTags = photo.tags();
-}
+public:
+    int getInterestFactor(const Slide& slide1, const Slide& slide2) const;
 
-Slide::Slide(const Photo &firstPhoto, const Photo &secondPhoto)
-{
-	mCountOfPhotos = 2;
-	mPhotos = new Photo[2] {firstPhoto, secondPhoto};
+private:
+    int getSmallestFactor(const set<int> &previous, const set<int> &common, const set<int> &next) const;
+};
 
-	set_union(firstPhoto.tags().begin(), firstPhoto.tags().end(), secondPhoto.tags().begin(), secondPhoto.tags().end(), inserter(mTags, mTags.begin()));
-}
-
-Slide::~Slide()
-{
-//	delete mPhotos;
-}
-
-string Slide::toString() const
-{
-	string output(to_string(mPhotos[0].id()));
-	if(mCountOfPhotos > 1) {
-		output += " " + to_string(mPhotos[1].id());
-	}
-	return output;
-}
-
-int Slide::tagCount() const
-{
-	return static_cast<int>(mTags.size());
-}
-
-const set<int> &Slide::tags() const
-{
-	return mTags;
-}
+#endif //HASHCODE2019_INTERESTFACTORCALCULATOR_H

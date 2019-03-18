@@ -26,6 +26,7 @@
 #include <iostream>
 
 #include "Slide.h"
+#include "InterestFactorCalculator.h"
 
 using namespace std;
 
@@ -35,7 +36,7 @@ public:
 	void write(const string &filename, const list<Slide> &slides) const;
 
 private:
-	int getInterestFactor(const set<int> &previous, const set<int> &common, const set<int> &next) const;
+	InterestFactorCalculator mInterestFactorCalculator;
 };
 
 #endif //HASHCODE2019_FILEWRITER_H
