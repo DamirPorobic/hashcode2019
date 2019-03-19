@@ -24,11 +24,12 @@ Photo LineParser::parse(int id, string &line, TagStorage &tagStorage) const
 	istringstream stringStream(line);
 	vector<string> allEntries(istream_iterator<string>{stringStream}, istream_iterator<string>());
 	Orientation orientation = getOrientation(allEntries[0]);
-	set<int> tags;
+    tagSet tags;
 
 	for(auto i = 2; i < allEntries.size() ; i++) {
 		auto tagId = tagStorage.getId(allEntries[i]);
-		tags.insert(tagId);
+		cout << to_string(tagId) << endl;
+		tags.set(static_cast<size_t>(tagId));
 	}
 
 	return Photo(id, orientation, tags);

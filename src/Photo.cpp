@@ -19,7 +19,7 @@
 
 #include "Photo.h"
 
-Photo::Photo(int id, Orientation orientation, set<int> &tags)
+Photo::Photo(int id, Orientation orientation, tagSet &tags)
 {
 	mId = id;
 	mOrientation = orientation;
@@ -36,12 +36,12 @@ Orientation Photo::orientation() const
 	return mOrientation;
 }
 
-const set<int>& Photo::tags() const
+const tagSet& Photo::tags() const
 {
 	return mTags;
 }
 
 int Photo::tagCount() const
 {
-	return static_cast<int>(tags().size());
+	return static_cast<int>(tags().count());
 }

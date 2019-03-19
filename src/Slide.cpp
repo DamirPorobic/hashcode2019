@@ -17,44 +17,43 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <iterator>
 #include "Slide.h"
 
 Slide::Slide(const Photo &photo)
 {
 	mCountOfPhotos = 1;
-	mPhotos = new Photo[1] {photo};
+	mPhotoIds = new int[1] {photo.id()};
 	mTags = photo.tags();
 }
 
 Slide::Slide(const Photo &firstPhoto, const Photo &secondPhoto)
 {
 	mCountOfPhotos = 2;
-	mPhotos = new Photo[2] {firstPhoto, secondPhoto};
+	mPhotoIds = new int[2] {firstPhoto.id(), secondPhoto.id()};
 
-	set_union(firstPhoto.tags().begin(), firstPhoto.tags().end(), secondPhoto.tags().begin(), secondPhoto.tags().end(), inserter(mTags, mTags.begin()));
+	mTags = firstPhoto.tags() | secondPhoto.tags();
 }
 
 Slide::~Slide()
 {
-//	delete mPhotos;
+//	delete mPhotoIds;
 }
 
 string Slide::toString() const
 {
-	string output(to_string(mPhotos[0].id()));
+	string output(to_string(mPhotoIds[0]));
 	if(mCountOfPhotos > 1) {
-		output += " " + to_string(mPhotos[1].id());
+		output += " " + to_string(mPhotoIds[1]);
 	}
 	return output;
 }
 
 int Slide::tagCount() const
 {
-	return static_cast<int>(mTags.size());
+	return static_cast<int>(mTags.count());
 }
 
-const set<int> &Slide::tags() const
+const tagSet &Slide::tags() const
 {
 	return mTags;
 }

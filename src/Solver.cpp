@@ -73,7 +73,7 @@ list<Slide, std::allocator<Slide>>::iterator Solver::getMatchingSlide(list<Slide
 			return matchingEntry;
 		}
 
-		auto interestFactor = mInterestFactorCalculator.getInterestFactor(*iterator, currentSlide);
+		auto interestFactor = mInterestFactorCalculator.calculateFactor(*iterator, currentSlide);
 		if (interestFactor > maxInterestFactor) {
 			maxInterestFactor = interestFactor;
 			matchingEntry = iterator;
@@ -123,11 +123,11 @@ list<Photo, std::allocator<Photo>>::iterator Solver::getMatchingVerticalPhotoWit
 		}
 
 		if (innerIterator->orientation() == Orientation::Vertical) {
-			set<int> mergedTags;
-			set_union(innerIterator->tags().begin(), innerIterator->tags().end(), firstPhoto.tags().begin(), firstPhoto.tags().end(), inserter(mergedTags, mergedTags.begin()));
+			tagSet mergedTags;
+			mergedTags = innerIterator->tags() | firstPhoto.tags();
 
-			if (mergedTags.size() > maxUniqueTags) {
-				maxUniqueTags = static_cast<int>(mergedTags.size());
+			if (mergedTags.count() > maxUniqueTags) {
+				maxUniqueTags = static_cast<int>(mergedTags.count());
 				matchingEntry = innerIterator;
 			}
 		}

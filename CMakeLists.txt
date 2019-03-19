@@ -12,4 +12,5 @@ add_executable(hashcode2019
 			   src/Solver.cpp
 			   src/TagStorage.cpp
 			   src/FileWriter.cpp
-        src/InterestFactorCalculator.cpp src/InterestFactorCalculator.h)
+        	   src/InterestFactorCalculator.cpp src/InterestFactorCalculator.h
+		)

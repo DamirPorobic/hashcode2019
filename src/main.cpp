@@ -12,16 +12,16 @@ using namespace std;
 int main()
 {
 	vector<string> filenames = {
-		"a_example.txt",
-//	    "b_lovely_landscapes.txt",
-	    "c_memorable_moments.txt",
-	    "d_pet_pictures.txt",
+//		"a_example.txt",
+	    "b_lovely_landscapes.txt",
+//	    "c_memorable_moments.txt",
+//	    "d_pet_pictures.txt",
 //	    "e_shiny_selfies.txt"
 	};
 	TagStorage tagStorage;
 	FileParser fileParser{};
-	FileWriter fileWriter;
-	Solver solver;
+	FileWriter fileWriter{};
+	Solver solver{};
 	for(const auto &filename : filenames) {
 		cout << "Parsing: " << filename << endl;
 		tagStorage.clear();
