@@ -35,14 +35,14 @@ public:
 	Slide(const Photo &firstPhoto, const Photo &secondPhoto);
 	string toString() const;
 	int tagCount() const;
-	const tagSet& tags() const;
+	const set<int>& tags() const;
 
 	~Slide();
 
 private:
-	int* mPhotoIds;
+	Photo* mPhotos;
 	int mCountOfPhotos;
-    tagSet mTags;
+	set<int> mTags;
 };
 
 #endif //HASHCODE2019_SLIDE_H

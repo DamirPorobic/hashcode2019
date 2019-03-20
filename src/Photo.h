@@ -23,28 +23,25 @@
 #include <vector>
 #include <set>
 #include <string>
-#include <bitset>
 
 #include "Orientation.h"
-
-typedef std::bitset<840000> tagSet;
 
 using namespace std;
 
 class Photo
 {
 public:
-	Photo(int id, Orientation orientation, tagSet &tags);
+	Photo(int id, Orientation orientation, set<int> &tags);
 	~Photo() = default;
 	int id() const;
 	Orientation orientation() const;
-	const tagSet& tags() const;
+	const set<int>& tags() const;
 	int tagCount() const;
 
 private:
 	int mId;
 	Orientation mOrientation;
-	tagSet mTags;
+	set<int> mTags;
 };
 
 #endif //HASHCODE2019_PHOTO_H

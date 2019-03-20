@@ -22,19 +22,21 @@
 int TagStorage::getId(const string &tag)
 {
 	if(mTagToId.count(tag) == 0) {
-		auto id = static_cast<int>(mTagToId.size());
+		auto id = static_cast<int>(mTagToId.size() + 1);
 		mTagToId[tag] = id;
+		mIdToTag[id] = tag;
 	}
 
 	return mTagToId[tag];
 }
 
-void TagStorage::clear()
+string TagStorage::getTag(int id)
 {
-	mTagToId.clear();
+	return mIdToTag[id];
 }
 
-int TagStorage::size() const
+void TagStorage::clear()
 {
-    return mTagToId.size();
+	mIdToTag.clear();
+	mTagToId.clear();
 }

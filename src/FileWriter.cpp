@@ -34,7 +34,7 @@ void FileWriter::write(const string &filename, const list<Slide> &slides) const
 			continue;
 		}
 
-		points += mInterestFactorCalculator.calculateFactor(*previous, *iterator);
+		points += mInterestFactorCalculator.getInterestFactor(*previous, *iterator);
 	}
 	cout << "Points: " << to_string(points) << endl;
 	outputFile.close();

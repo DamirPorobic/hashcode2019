@@ -32,11 +32,12 @@ public:
 	~TagStorage() = default;
 
 	int getId(const string &tag);
+	string getTag(int id);
 	void clear();
-	int size() const;
 
 private:
 	map<string, int> mTagToId;
+	map<int, string> mIdToTag;
 };
 
 #endif //HASHCODE2019_TAGSTORAGE_H

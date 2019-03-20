@@ -25,10 +25,10 @@
 class InterestFactorCalculator
 {
 public:
-    int calculateFactor(const Slide &slide1, const Slide &slide2) const;
+    int getInterestFactor(const Slide& slide1, const Slide& slide2) const;
 
 private:
-    int getSmallestFactor(const tagSet &previous, const tagSet &common, const tagSet &next) const;
+    int getSmallestFactor(const set<int> &previous, const set<int> &common, const set<int> &next) const;
 };
 
 #endif //HASHCODE2019_INTERESTFACTORCALCULATOR_H

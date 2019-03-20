@@ -19,20 +19,19 @@
 
 #include "InterestFactorCalculator.h"
 
-int InterestFactorCalculator::calculateFactor(const Slide &slide1, const Slide &slide2) const
+int InterestFactorCalculator::getInterestFactor(const Slide &slide1, const Slide &slide2) const
 {
-    tagSet commonTags;
-    tagSet previousTags;
-    tagSet nextTags;
-
-    commonTags = slide1.tags() & slide2.tags();
-    previousTags = commonTags ^ slide1.tags();
-    nextTags = commonTags ^ slide2.tags();
+    set<int> commonTags;
+    set<int> previousTags;
+    set<int> nextTags;
+    set_intersection(slide2.tags().begin(), slide2.tags().end(), slide1.tags().begin(), slide1.tags().end(), inserter(commonTags, commonTags.begin()));
+    set_difference(slide1.tags().begin(), slide1.tags().end(), commonTags.begin(), commonTags.end(), inserter(previousTags, previousTags.begin()));
+    set_difference(slide2.tags().begin(), slide2.tags().end(), commonTags.begin(), commonTags.end(), inserter(nextTags, nextTags.begin()));
 
     return getSmallestFactor(previousTags, commonTags, nextTags);
 }
 
-int InterestFactorCalculator::getSmallestFactor(const tagSet &previous, const tagSet &common, const tagSet &next) const
+int InterestFactorCalculator::getSmallestFactor(const set<int> &previous, const set<int> &common, const set<int> &next) const
 {
-    return static_cast<int>(min({ previous.count(), common.count(), next.count()}));
+    return static_cast<int>(min({ previous.size(), common.size(), next.size()}));
 }
