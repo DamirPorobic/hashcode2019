@@ -17,26 +17,26 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef HASHCODE2019_LINEPARSER_H
-#define HASHCODE2019_LINEPARSER_H
+#ifndef HASHCODE2019_FILEWRITER_H
+#define HASHCODE2019_FILEWRITER_H
 
+#include <fstream>
 #include <list>
 #include <string>
 #include <iostream>
-#include <vector>
-#include <iterator>
-#include <sstream>
 
-#include "Photo.h"
-#include "TagStorage.h"
+#include "src/objects/Slide.h"
+#include "src/algorithm/InterestFactorCalculator.h"
 
 using namespace std;
 
-class LineParser
+class FileWriter
 {
 public:
-	Photo parse(int id, string &line, TagStorage &tagStorage) const;
-	Orientation getOrientation(basic_string<char> &orientationString) const;
+	int write(const string &filename, const list<Slide*> &slides) const;
+
+private:
+	InterestFactorCalculator mInterestFactorCalculator;
 };
 
-#endif //HASHCODE2019_LINEPARSER_H
+#endif //HASHCODE2019_FILEWRITER_H

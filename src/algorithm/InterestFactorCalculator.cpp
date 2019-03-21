@@ -19,14 +19,14 @@
 
 #include "InterestFactorCalculator.h"
 
-int InterestFactorCalculator::getInterestFactor(const Slide &slide1, const Slide &slide2) const
+int InterestFactorCalculator::getInterestFactor(const Slide *slide1, const Slide *slide2) const
 {
     set<int> commonTags;
     set<int> previousTags;
     set<int> nextTags;
-    set_intersection(slide2.tags().begin(), slide2.tags().end(), slide1.tags().begin(), slide1.tags().end(), inserter(commonTags, commonTags.begin()));
-    set_difference(slide1.tags().begin(), slide1.tags().end(), commonTags.begin(), commonTags.end(), inserter(previousTags, previousTags.begin()));
-    set_difference(slide2.tags().begin(), slide2.tags().end(), commonTags.begin(), commonTags.end(), inserter(nextTags, nextTags.begin()));
+    set_intersection(slide2->tags().begin(), slide2->tags().end(), slide1->tags().begin(), slide1->tags().end(), inserter(commonTags, commonTags.begin()));
+    set_difference(slide1->tags().begin(), slide1->tags().end(), commonTags.begin(), commonTags.end(), inserter(previousTags, previousTags.begin()));
+    set_difference(slide2->tags().begin(), slide2->tags().end(), commonTags.begin(), commonTags.end(), inserter(nextTags, nextTags.begin()));
 
     return getSmallestFactor(previousTags, commonTags, nextTags);
 }

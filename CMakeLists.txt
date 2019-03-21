@@ -3,13 +3,20 @@ project(hashcode2019)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(hashcode2019
-			   src/main.cpp
-			   src/FileParser.cpp
-			   src/LineParser.cpp
-			   src/Slide.cpp
-			   src/Photo.cpp
-			   src/Solver.cpp
-			   src/TagStorage.cpp
-			   src/FileWriter.cpp
-        src/InterestFactorCalculator.cpp src/InterestFactorCalculator.h)
+set(BASEPATH "${CMAKE_SOURCE_DIR}")
+include_directories("${BASEPATH}")
+
+set(HASHCODE_SRC
+		src/main.cpp
+		src/fileHandling/FileParser.cpp
+		src/fileHandling/LineParser.cpp
+		src/objects/Slide.cpp
+		src/objects/Photo.cpp
+		src/algorithm/Solver.cpp
+		src/storage/TagStorage.cpp
+		src/fileHandling/FileWriter.cpp
+		src/algorithm/InterestFactorCalculator.cpp
+		src/storage/SlideStorage.cpp
+		)
+
+add_executable(hashcode2019 ${HASHCODE_SRC})

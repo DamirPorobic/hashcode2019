@@ -17,32 +17,37 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef HASHCODE2019_SLIDE_H
-#define HASHCODE2019_SLIDE_H
-
-#include <algorithm>
 #include <iterator>
+#include "Slide.h"
 
-#include "Photo.h"
-#include "Orientation.h"
-
-using namespace std;
-
-class Slide
+Slide::Slide(const Photo &photo)
 {
-public:
-	explicit Slide(const Photo &photo);
-	Slide(const Photo &firstPhoto, const Photo &secondPhoto);
-	string toString() const;
-	int tagCount() const;
-	const set<int>& tags() const;
+	mPhotoIds.insert(photo.id());
+	mTags = photo.tags();
+}
 
-	~Slide();
+Slide::Slide(const Photo &firstPhoto, const Photo &secondPhoto)
+{
+    mPhotoIds.insert(firstPhoto.id());
+    mPhotoIds.insert(secondPhoto.id());
+	set_union(firstPhoto.tags().begin(), firstPhoto.tags().end(), secondPhoto.tags().begin(), secondPhoto.tags().end(), inserter(mTags, mTags.begin()));
+}
 
-private:
-	Photo* mPhotos;
-	int mCountOfPhotos;
-	set<int> mTags;
-};
+string Slide::toString() const
+{
+	string output;
+	for(auto id : mPhotoIds) {
+	    output += to_string(id) + " ";
+	}
+	return output;
+}
 
-#endif //HASHCODE2019_SLIDE_H
+int Slide::tagCount() const
+{
+	return static_cast<int>(mTags.size());
+}
+
+const set<int> &Slide::tags() const
+{
+	return mTags;
+}

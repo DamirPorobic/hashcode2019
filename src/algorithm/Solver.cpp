@@ -19,39 +19,42 @@
 
 #include "Solver.h"
 
-list<Slide> Solver::solve(list<Photo> &photos) const
+list<Slide*> Solver::solve(list<Photo> &photos) const
 {
-	list<Slide> slides;
-	list<Slide> finishedSlides;
+	list<Slide*> finishedSlides;
+    SlideStorage slideStorage;
 
-	addHorizontalPhotosToSlides(photos, slides);
-	addVerticalPhotosToSlides(photos, slides);
+	addHorizontalPhotosToSlides(photos, slideStorage);
+	addVerticalPhotosToSlides(photos, slideStorage);
 
-	cout << "Slides Created: " << to_string(slides.size()) << endl;
-
-	sortSlides(slides);
-
-	bringSlidesInOrder(slides, finishedSlides);
+	bringSlidesInOrder(slideStorage, finishedSlides);
 
 	return finishedSlides;
 }
 
-void Solver::bringSlidesInOrder(list<Slide> &slides, list<Slide> &finishedSlides) const
+void Solver::bringSlidesInOrder(SlideStorage &slideStorage, list<Slide*> &finishedSlides) const
 {
-	auto iterator = slides.begin();
+	auto allSlides = slideStorage.getAllSlides();
 
-	auto currentSlide = *iterator;
-	finishedSlides.push_back(currentSlide);
-	slides.erase(iterator);
-	auto initialSize = slides.size();
+	cout << "Slides to sort: " << to_string(allSlides.size()) << endl;
+
+	auto currentSlide = *allSlides.begin();
+	finishSlide(slideStorage, finishedSlides, allSlides, currentSlide);
+
+	auto initialSize = allSlides.size();
 	auto lastPercent = 0;
 	auto slideNumber = 0.0;
 
-	while (!slides.empty()) {
-		auto matchingEntry = getMatchingSlide(slides, currentSlide);
-		finishedSlides.push_back(*matchingEntry);
-		currentSlide = *matchingEntry;
-		slides.erase(matchingEntry);
+	while (!allSlides.empty()) {
+		auto slidesWithAnyMatchingTag = slideStorage.getSlidesForTags(currentSlide->tags());
+
+		if(slidesWithAnyMatchingTag.empty()) {
+			currentSlide = *allSlides.begin();
+		} else {
+			currentSlide = getMatchingSlide(slidesWithAnyMatchingTag, currentSlide);
+		}
+
+		finishSlide(slideStorage, finishedSlides, allSlides, currentSlide);
 
 		slideNumber++;
 		auto percent = static_cast<int>(round(slideNumber / initialSize * 100));
@@ -62,15 +65,22 @@ void Solver::bringSlidesInOrder(list<Slide> &slides, list<Slide> &finishedSlides
 	}
 }
 
-list<Slide, std::allocator<Slide>>::iterator Solver::getMatchingSlide(list<Slide> &slides, const Slide &currentSlide) const
+void Solver::finishSlide(SlideStorage &slideStorage, list<Slide *> &finishedSlides, list<Slide *> &allSlides, Slide * currentSlide) const
+{
+	finishedSlides.push_back(currentSlide);
+	slideStorage.remove(currentSlide);
+	allSlides.remove(currentSlide);
+}
+
+Slide* Solver::getMatchingSlide(list<Slide*> &slides, const Slide *currentSlide) const
 {
 	auto maxInterestFactor = 0;
 	auto iterator = slides.begin();
 	auto matchingEntry = iterator;
-	while (iterator != slides.end()) {
 
-		if(iterator->tagCount() <= maxInterestFactor * 2 + 1) {
-			return matchingEntry;
+	while (iterator != slides.end()) {
+		if((*iterator)->tagCount() <= maxInterestFactor * 2 + 1) {
+			return *matchingEntry;
 		}
 
 		auto interestFactor = mInterestFactorCalculator.getInterestFactor(*iterator, currentSlide);
@@ -80,17 +90,17 @@ list<Slide, std::allocator<Slide>>::iterator Solver::getMatchingSlide(list<Slide
 		}
 		iterator++;
 	}
-	return matchingEntry;
+
+	return *matchingEntry;
 }
 
-void Solver::addHorizontalPhotosToSlides(list<Photo> &photos, list<Slide> &slides) const
+void Solver::addHorizontalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage) const
 {
 	auto iterator = photos.begin();
 	while (iterator != photos.end())
 	{
 		if(iterator->orientation() == Orientation::Horizontal) {
-			auto newSlide = Slide(*iterator);
-			slides.push_back(newSlide);
+            slideStorage.add(new Slide(*iterator));
 			iterator = photos.erase(iterator);
 		} else {
 			iterator++;
@@ -98,15 +108,13 @@ void Solver::addHorizontalPhotosToSlides(list<Photo> &photos, list<Slide> &slide
 	}
 }
 
-void Solver::addVerticalPhotosToSlides(list<Photo> &photos, list<Slide> &slides) const
+void Solver::addVerticalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage) const
 {
 	auto iterator = photos.begin();
 	while (iterator != photos.end()) {
 		auto currentPhoto = *iterator;
 		auto matchingVerticalPhoto = getMatchingVerticalPhotoWithMaxUnitTags(photos, currentPhoto);
-
-		auto newSlide = Slide(currentPhoto, *matchingVerticalPhoto);
-		slides.push_back(newSlide);
+		slideStorage.add(new Slide(currentPhoto, *matchingVerticalPhoto));
 		photos.erase(matchingVerticalPhoto);
 		iterator = photos.erase(iterator);
 	}
@@ -135,9 +143,4 @@ list<Photo, std::allocator<Photo>>::iterator Solver::getMatchingVerticalPhotoWit
 	}
 
 	return matchingEntry;
-}
-
-void Solver::sortSlides(list<Slide> &slides) const
-{
-	slides.sort([](const Slide & a, const Slide & b) { return a.tagCount() > b.tagCount(); });
 }

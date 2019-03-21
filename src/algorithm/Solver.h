@@ -17,26 +17,34 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef HASHCODE2019_FILEWRITER_H
-#define HASHCODE2019_FILEWRITER_H
+#ifndef HASHCODE2019_SOLVER_H
+#define HASHCODE2019_SOLVER_H
 
-#include <fstream>
-#include <list>
-#include <string>
 #include <iostream>
+#include <list>
+#include <set>
+#include <iterator>
 
-#include "Slide.h"
+#include "src/objects/Slide.h"
+#include "src/objects/Photo.h"
+#include "src/storage/SlideStorage.h"
 #include "InterestFactorCalculator.h"
 
 using namespace std;
 
-class FileWriter
+class Solver
 {
 public:
-	void write(const string &filename, const list<Slide> &slides) const;
+	list<Slide*> solve(list<Photo> &photos) const;
 
 private:
+	void addHorizontalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage) const;
+	void addVerticalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage) const;
+	list<Photo, std::allocator<Photo>>::iterator getMatchingVerticalPhotoWithMaxUnitTags(list<Photo> &photos, const Photo &firstPhoto) const;
+	void bringSlidesInOrder(SlideStorage &slideStorage, list<Slide*> &finishedSlides) const;
+	Slide* getMatchingSlide(list<Slide*> &slides, const Slide *currentSlide) const;
 	InterestFactorCalculator mInterestFactorCalculator;
+	void finishSlide(SlideStorage &slideStorage, list<Slide *> &finishedSlides, list<Slide *> &allSlides, Slide *currentSlide) const;
 };
 
-#endif //HASHCODE2019_FILEWRITER_H
+#endif //HASHCODE2019_SOLVER_H

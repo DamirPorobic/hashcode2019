@@ -17,44 +17,26 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifndef HASHCODE2019_LINEPARSER_H
+#define HASHCODE2019_LINEPARSER_H
+
+#include <list>
+#include <string>
+#include <iostream>
+#include <vector>
 #include <iterator>
-#include "Slide.h"
+#include <sstream>
 
-Slide::Slide(const Photo &photo)
+#include "src/objects/Photo.h"
+#include "src/storage/TagStorage.h"
+
+using namespace std;
+
+class LineParser
 {
-	mCountOfPhotos = 1;
-	mPhotos = new Photo[1] {photo};
-	mTags = photo.tags();
-}
+public:
+	Photo parse(int id, string &line, TagStorage &tagStorage) const;
+	Orientation getOrientation(basic_string<char> &orientationString) const;
+};
 
-Slide::Slide(const Photo &firstPhoto, const Photo &secondPhoto)
-{
-	mCountOfPhotos = 2;
-	mPhotos = new Photo[2] {firstPhoto, secondPhoto};
-
-	set_union(firstPhoto.tags().begin(), firstPhoto.tags().end(), secondPhoto.tags().begin(), secondPhoto.tags().end(), inserter(mTags, mTags.begin()));
-}
-
-Slide::~Slide()
-{
-//	delete mPhotos;
-}
-
-string Slide::toString() const
-{
-	string output(to_string(mPhotos[0].id()));
-	if(mCountOfPhotos > 1) {
-		output += " " + to_string(mPhotos[1].id());
-	}
-	return output;
-}
-
-int Slide::tagCount() const
-{
-	return static_cast<int>(mTags.size());
-}
-
-const set<int> &Slide::tags() const
-{
-	return mTags;
-}
+#endif //HASHCODE2019_LINEPARSER_H

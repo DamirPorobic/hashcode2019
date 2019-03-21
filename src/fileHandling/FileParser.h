@@ -17,26 +17,27 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "TagStorage.h"
+#ifndef HASHCODE2019_FILEPARSER_H
+#define HASHCODE2019_FILEPARSER_H
 
-int TagStorage::getId(const string &tag)
+#include <fstream>
+#include <iostream>
+
+#include "LineParser.h"
+#include "../objects/Slide.h"
+#include "../storage/TagStorage.h"
+
+using namespace std;
+
+class FileParser
 {
-	if(mTagToId.count(tag) == 0) {
-		auto id = static_cast<int>(mTagToId.size() + 1);
-		mTagToId[tag] = id;
-		mIdToTag[id] = tag;
-	}
+public:
+	list<Photo> parse(const string &filename, TagStorage &tagStorage) const;
 
-	return mTagToId[tag];
-}
+private:
+	LineParser mLineParser;
 
-string TagStorage::getTag(int id)
-{
-	return mIdToTag[id];
-}
+	void sort(list<Photo> &photos) const;
+};
 
-void TagStorage::clear()
-{
-	mIdToTag.clear();
-	mTagToId.clear();
-}
+#endif //HASHCODE2019_FILEPARSER_H

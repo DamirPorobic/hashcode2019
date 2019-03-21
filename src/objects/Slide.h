@@ -17,27 +17,30 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef HASHCODE2019_FILEPARSER_H
-#define HASHCODE2019_FILEPARSER_H
+#ifndef HASHCODE2019_SLIDE_H
+#define HASHCODE2019_SLIDE_H
 
-#include <fstream>
-#include <iostream>
+#include <algorithm>
+#include <iterator>
 
-#include "LineParser.h"
-#include "Slide.h"
-#include "TagStorage.h"
+#include "Photo.h"
+#include "Orientation.h"
 
 using namespace std;
 
-class FileParser
+class Slide
 {
 public:
-	list<Photo> parse(const string &filename, TagStorage &tagStorage) const;
+	explicit Slide(const Photo &photo);
+	Slide(const Photo &firstPhoto, const Photo &secondPhoto);
+	~Slide() = default;
+	string toString() const;
+	int tagCount() const;
+	const set<int>& tags() const;
 
 private:
-	LineParser mLineParser;
-
-	void sort(list<Photo> &photos) const;
+	set<int> mPhotoIds;
+	set<int> mTags;
 };
 
-#endif //HASHCODE2019_FILEPARSER_H
+#endif //HASHCODE2019_SLIDE_H

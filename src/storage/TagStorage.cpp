@@ -17,18 +17,19 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef HASHCODE2019_INTERESTFACTORCALCULATOR_H
-#define HASHCODE2019_INTERESTFACTORCALCULATOR_H
+#include "TagStorage.h"
 
-#include "Slide.h"
-
-class InterestFactorCalculator
+int TagStorage::getId(const string &tag)
 {
-public:
-    int getInterestFactor(const Slide& slide1, const Slide& slide2) const;
+	if(mTagToId.count(tag) == 0) {
+		auto id = static_cast<int>(mTagToId.size() + 1);
+		mTagToId[tag] = id;
+	}
 
-private:
-    int getSmallestFactor(const set<int> &previous, const set<int> &common, const set<int> &next) const;
-};
+	return mTagToId[tag];
+}
 
-#endif //HASHCODE2019_INTERESTFACTORCALCULATOR_H
+void TagStorage::clear()
+{
+	mTagToId.clear();
+}

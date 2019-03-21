@@ -17,25 +17,28 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "FileWriter.h"
+#include "FileParser.h"
+#include "../storage/TagStorage.h"
 
-void FileWriter::write(const string &filename, const list<Slide> &slides) const
+list<Photo> FileParser::parse(const string &filename, TagStorage &tagStorage) const
 {
-	ofstream outputFile;
-	outputFile.open (filename);
-	outputFile << to_string(slides.size()) << endl;
-	int points = 0;
-
-	for(auto iterator = slides.begin(), previous=slides.end(); iterator != slides.end(); previous=iterator, ++iterator )
-	{
-		outputFile << iterator->toString() << endl;
-
-		if(previous == slides.end()) {
-			continue;
-		}
-
-		points += mInterestFactorCalculator.getInterestFactor(*previous, *iterator);
+	ifstream infile(filename);
+	string line;
+	int photoId = 0;
+	getline(infile, line); // remove first line, we don't need it;
+	list<Photo> photos;
+	while (getline(infile, line)) {
+		auto photo = mLineParser.parse(photoId, line, tagStorage);
+		photos.push_back(photo);
+		photoId++;
 	}
-	cout << "Points: " << to_string(points) << endl;
-	outputFile.close();
+	sort(photos);
+	cout << "Photos in list: " << to_string(photos.size()) << endl;
+
+	return photos;
+}
+
+void FileParser::sort(list<Photo> &photos) const
+{
+	photos.sort([](const Photo & a, const Photo & b) { return a.tagCount() > b.tagCount(); });
 }
