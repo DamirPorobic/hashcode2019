@@ -22,7 +22,7 @@
 int TagStorage::getId(const string &tag)
 {
 	if(mTagToId.count(tag) == 0) {
-		auto id = static_cast<int>(mTagToId.size() + 1);
+		auto id = static_cast<int>(mTagToId.size());
 		mTagToId[tag] = id;
 	}
 
@@ -32,4 +32,9 @@ int TagStorage::getId(const string &tag)
 void TagStorage::clear()
 {
 	mTagToId.clear();
+}
+
+int TagStorage::tagCount() const
+{
+	return static_cast<int>(mTagToId.size());
 }

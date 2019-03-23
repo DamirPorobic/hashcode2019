@@ -19,20 +19,20 @@
 
 #include "Solver.h"
 
-list<Slide*> Solver::solve(list<Photo> &photos) const
+list<Slide *> Solver::solve(list<Photo> &photos, int tagCount) const
 {
 	list<Slide*> finishedSlides;
     SlideStorage slideStorage;
 
-	addHorizontalPhotosToSlides(photos, slideStorage);
-	addVerticalPhotosToSlides(photos, slideStorage);
+	addHorizontalPhotosToSlides(photos, slideStorage, tagCount);
+	addVerticalPhotosToSlides(photos, slideStorage, tagCount);
 
-	bringSlidesInOrder(slideStorage, finishedSlides);
+	bringSlidesInOrder(slideStorage, finishedSlides, tagCount);
 
 	return finishedSlides;
 }
 
-void Solver::bringSlidesInOrder(SlideStorage &slideStorage, list<Slide*> &finishedSlides) const
+void Solver::bringSlidesInOrder(SlideStorage &slideStorage, list<Slide *> &finishedSlides, int tagCount) const
 {
 	auto allSlides = slideStorage.getAllSlides();
 
@@ -46,12 +46,18 @@ void Solver::bringSlidesInOrder(SlideStorage &slideStorage, list<Slide*> &finish
 	auto slideNumber = 0.0;
 
 	while (!allSlides.empty()) {
-		auto slidesWithAnyMatchingTag = slideStorage.getSlidesForTags(currentSlide->tags());
 
-		if(slidesWithAnyMatchingTag.empty()) {
+		list<Slide *> slidesForLookup;
+		if(tagCount > 1000) {
+			slidesForLookup = slideStorage.getSlidesForTags(currentSlide->tags());
+		} else {
+			slidesForLookup = allSlides;
+		}
+
+		if(slidesForLookup.empty()) {
 			currentSlide = *allSlides.begin();
 		} else {
-			currentSlide = getMatchingSlide(slidesWithAnyMatchingTag, currentSlide);
+			currentSlide = getMatchingSlide(slidesForLookup, currentSlide);
 		}
 
 		finishSlide(slideStorage, finishedSlides, allSlides, currentSlide);
@@ -94,13 +100,13 @@ Slide* Solver::getMatchingSlide(list<Slide*> &slides, const Slide *currentSlide)
 	return *matchingEntry;
 }
 
-void Solver::addHorizontalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage) const
+void Solver::addHorizontalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage, int tagCount) const
 {
 	auto iterator = photos.begin();
 	while (iterator != photos.end())
 	{
 		if(iterator->orientation() == Orientation::Horizontal) {
-            slideStorage.add(new Slide(*iterator));
+            slideStorage.add(new Slide(*iterator, tagCount));
 			iterator = photos.erase(iterator);
 		} else {
 			iterator++;
@@ -108,13 +114,13 @@ void Solver::addHorizontalPhotosToSlides(list<Photo> &photos, SlideStorage &slid
 	}
 }
 
-void Solver::addVerticalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage) const
+void Solver::addVerticalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage, int tagCount) const
 {
 	auto iterator = photos.begin();
 	while (iterator != photos.end()) {
 		auto currentPhoto = *iterator;
 		auto matchingVerticalPhoto = getMatchingVerticalPhotoWithMaxUnitTags(photos, currentPhoto);
-		slideStorage.add(new Slide(currentPhoto, *matchingVerticalPhoto));
+		slideStorage.add(new Slide(currentPhoto, *matchingVerticalPhoto, tagCount));
 		photos.erase(matchingVerticalPhoto);
 		iterator = photos.erase(iterator);
 	}

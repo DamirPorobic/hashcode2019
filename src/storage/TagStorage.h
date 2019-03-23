@@ -32,6 +32,7 @@ public:
 	~TagStorage() = default;
 
 	int getId(const string &tag);
+	int tagCount() const;
 	void clear();
 
 private:

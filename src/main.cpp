@@ -14,10 +14,10 @@ int main()
 {
 	vector<string> filenames = {
 		"a_example.txt",
-//	    "b_lovely_landscapes.txt",
+	    "b_lovely_landscapes.txt",
 	    "c_memorable_moments.txt",
-//	    "d_pet_pictures.txt",
-//	    "e_shiny_selfies.txt"
+	    "d_pet_pictures.txt",
+	    "e_shiny_selfies.txt"
 	};
 	TagStorage tagStorage;
 	FileParser fileParser{};
@@ -29,7 +29,7 @@ int main()
 		cout << "Parsing: " << filename << endl;
 		tagStorage.clear();
 		auto photos = fileParser.parse("../in/" + filename, tagStorage);
-		auto slides = solver.solve(photos);
+		auto slides = solver.solve(photos, tagStorage.tagCount());
 		auto points = fileWriter.write("../out/" + filename, slides);
 		overallPoints += points;
 		cout << "Points in " << filename << ": " << to_string(points) << endl;

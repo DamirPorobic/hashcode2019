@@ -20,17 +20,22 @@
 #include <iterator>
 #include "Slide.h"
 
-Slide::Slide(const Photo &photo)
+Slide::Slide(const Photo &photo, int maxTagCount)
 {
 	mPhotoIds.insert(photo.id());
-	mTags = photo.tags();
+	mTags = new tagSet(static_cast<unsigned long>(maxTagCount));
+	addTags(photo);
+	mCardinality = static_cast<int>(mTags->count());
 }
 
-Slide::Slide(const Photo &firstPhoto, const Photo &secondPhoto)
+Slide::Slide(const Photo &firstPhoto, const Photo &secondPhoto, int maxTagCount)
 {
     mPhotoIds.insert(firstPhoto.id());
     mPhotoIds.insert(secondPhoto.id());
-	set_union(firstPhoto.tags().begin(), firstPhoto.tags().end(), secondPhoto.tags().begin(), secondPhoto.tags().end(), inserter(mTags, mTags.begin()));
+	mTags = new tagSet(static_cast<unsigned long>(maxTagCount));
+	addTags(firstPhoto);
+	addTags(secondPhoto);
+	mCardinality = static_cast<int>(mTags->count());
 }
 
 string Slide::toString() const
@@ -44,10 +49,17 @@ string Slide::toString() const
 
 int Slide::tagCount() const
 {
-	return static_cast<int>(mTags.size());
+	return mCardinality;
 }
 
-const set<int> &Slide::tags() const
+const tagSet *Slide::tags() const
 {
 	return mTags;
+}
+
+void Slide::addTags(const Photo &photo) const
+{
+	for(auto tag : photo.tags()) {
+		mTags->set(static_cast<unsigned long>(tag));
+	}
 }

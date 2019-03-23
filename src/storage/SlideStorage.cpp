@@ -22,16 +22,20 @@
 void SlideStorage::add(Slide *slide)
 {
     mAllSlides.insert(mAllSlides.end(), slide);
-    for(auto tag : slide->tags()) {
-        mTagIdToSlides[tag].push_back(slide);
+    auto pos = slide->tags()->find_first();
+    while (pos != tagSet::npos) {
+        mTagIdToSlides[pos].push_back(slide);
+        pos = slide->tags()->find_next(pos);
     }
 }
 
-list<Slide *> SlideStorage::getSlidesForTags(const set<int> &tags)
+list<Slide *> SlideStorage::getSlidesForTags(const tagSet *tags)
 {
     set<Slide*> slideSet;
-    for(auto tag : tags) {
-        slideSet.insert(mTagIdToSlides[tag].begin(), mTagIdToSlides[tag].end());
+    auto pos = tags->find_first();
+    while (pos != tagSet::npos) {
+        slideSet.insert(mTagIdToSlides[pos].begin(), mTagIdToSlides[pos].end());
+        pos = tags->find_next(pos);
     }
 
     list<Slide*> slideList;
@@ -48,9 +52,11 @@ void SlideStorage::sort(list<Slide*> &slides) const
 
 void SlideStorage::remove(Slide *slide)
 {
-    for(auto tag : slide->tags()) {
-        mTagIdToSlides[tag].remove(slide);
-    }
+	auto pos = slide->tags()->find_first();
+	while (pos != tagSet::npos) {
+		mTagIdToSlides[pos].remove(slide);
+		pos = slide->tags()->find_next(pos);
+	}
     mAllSlides.remove(slide);
 }
 

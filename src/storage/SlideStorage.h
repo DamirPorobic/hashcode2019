@@ -33,7 +33,7 @@ class SlideStorage
 {
 public:
     void add(Slide *slide);
-    list<Slide*> getSlidesForTags(const set<int> &tags);
+    list<Slide*> getSlidesForTags(const tagSet *tags);
     list<Slide*> getAllSlides();
     void remove(Slide *slide);
 

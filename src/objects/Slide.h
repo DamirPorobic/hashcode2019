@@ -22,25 +22,31 @@
 
 #include <algorithm>
 #include <iterator>
+#include <boost/dynamic_bitset.hpp>
 
 #include "Photo.h"
 #include "Orientation.h"
+
+typedef boost::dynamic_bitset<> tagSet;
 
 using namespace std;
 
 class Slide
 {
 public:
-	explicit Slide(const Photo &photo);
-	Slide(const Photo &firstPhoto, const Photo &secondPhoto);
+	explicit Slide(const Photo &photo, int maxTagCount);
+	Slide(const Photo &firstPhoto, const Photo &secondPhoto, int maxTagCoun);
 	~Slide() = default;
 	string toString() const;
 	int tagCount() const;
-	const set<int>& tags() const;
+	const tagSet* tags() const;
 
 private:
 	set<int> mPhotoIds;
-	set<int> mTags;
+	tagSet *mTags;
+	int mCardinality;
+
+	void addTags(const Photo &photo) const;
 };
 
 #endif //HASHCODE2019_SLIDE_H

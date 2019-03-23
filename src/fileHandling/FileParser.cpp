@@ -34,6 +34,7 @@ list<Photo> FileParser::parse(const string &filename, TagStorage &tagStorage) co
 	}
 	sort(photos);
 	cout << "Photos in list: " << to_string(photos.size()) << endl;
+	cout << "Tags in list: " << to_string(tagStorage.tagCount()) << endl;
 
 	return photos;
 }

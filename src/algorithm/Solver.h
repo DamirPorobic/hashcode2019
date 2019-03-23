@@ -35,13 +35,13 @@ using namespace std;
 class Solver
 {
 public:
-	list<Slide*> solve(list<Photo> &photos) const;
+	list<Slide *> solve(list<Photo> &photos, int tagCount) const;
 
 private:
-	void addHorizontalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage) const;
-	void addVerticalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage) const;
+	void addHorizontalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage, int tagCount) const;
+	void addVerticalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage, int tagCount) const;
 	list<Photo, std::allocator<Photo>>::iterator getMatchingVerticalPhotoWithMaxUnitTags(list<Photo> &photos, const Photo &firstPhoto) const;
-	void bringSlidesInOrder(SlideStorage &slideStorage, list<Slide*> &finishedSlides) const;
+	void bringSlidesInOrder(SlideStorage &slideStorage, list<Slide *> &finishedSlides, int tagCount) const;
 	Slide* getMatchingSlide(list<Slide*> &slides, const Slide *currentSlide) const;
 	InterestFactorCalculator mInterestFactorCalculator;
 	void finishSlide(SlideStorage &slideStorage, list<Slide *> &finishedSlides, list<Slide *> &allSlides, Slide *currentSlide) const;
