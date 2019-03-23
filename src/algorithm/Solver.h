@@ -30,6 +30,8 @@
 #include "src/storage/SlideStorage.h"
 #include "InterestFactorCalculator.h"
 
+typedef list<Photo, std::allocator<Photo>>::reverse_iterator photoInListIterator;
+
 using namespace std;
 
 class Solver
@@ -40,11 +42,11 @@ public:
 private:
 	void addHorizontalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage, int tagCount) const;
 	void addVerticalPhotosToSlides(list<Photo> &photos, SlideStorage &slideStorage, int tagCount) const;
-	list<Photo, std::allocator<Photo>>::iterator getMatchingVerticalPhotoWithMaxUnitTags(list<Photo> &photos, const Photo &firstPhoto) const;
-	void bringSlidesInOrder(SlideStorage &slideStorage, list<Slide *> &finishedSlides, int tagCount) const;
+	photoInListIterator getMatchingVerticalPhoto(list<Photo> &photos, const Photo &firstPhoto) const;
+	void bringSlidesInOrder(SlideStorage &slideStorage, list<Slide *> &finishedSlides, bool useStorage) const;
 	Slide* getMatchingSlide(list<Slide*> &slides, const Slide *currentSlide) const;
 	InterestFactorCalculator mInterestFactorCalculator;
-	void finishSlide(SlideStorage &slideStorage, list<Slide *> &finishedSlides, list<Slide *> &allSlides, Slide *currentSlide) const;
+	void finishSlide(SlideStorage &slideStorage, list<Slide *> &finishedSlides, list<Slide *> &allSlides, Slide *currentSlide, bool useStorage) const;
 };
 
 #endif //HASHCODE2019_SOLVER_H

@@ -36,7 +36,7 @@ class Slide
 public:
 	explicit Slide(const Photo &photo, int maxTagCount);
 	Slide(const Photo &firstPhoto, const Photo &secondPhoto, int maxTagCoun);
-	~Slide() = default;
+	~Slide();
 	string toString() const;
 	int tagCount() const;
 	const tagSet* tags() const;

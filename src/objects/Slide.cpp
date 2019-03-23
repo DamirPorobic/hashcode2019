@@ -63,3 +63,8 @@ void Slide::addTags(const Photo &photo) const
 		mTags->set(static_cast<unsigned long>(tag));
 	}
 }
+
+Slide::~Slide()
+{
+	delete mTags;
+}

@@ -19,6 +19,7 @@ int main()
 	    "d_pet_pictures.txt",
 	    "e_shiny_selfies.txt"
 	};
+
 	TagStorage tagStorage;
 	FileParser fileParser{};
 	FileWriter fileWriter{};

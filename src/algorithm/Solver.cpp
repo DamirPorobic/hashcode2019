@@ -27,28 +27,28 @@ list<Slide *> Solver::solve(list<Photo> &photos, int tagCount) const
 	addHorizontalPhotosToSlides(photos, slideStorage, tagCount);
 	addVerticalPhotosToSlides(photos, slideStorage, tagCount);
 
-	bringSlidesInOrder(slideStorage, finishedSlides, tagCount);
+	auto useStorage = tagCount > 1000;
+	bringSlidesInOrder(slideStorage, finishedSlides, useStorage);
 
 	return finishedSlides;
 }
 
-void Solver::bringSlidesInOrder(SlideStorage &slideStorage, list<Slide *> &finishedSlides, int tagCount) const
+void Solver::bringSlidesInOrder(SlideStorage &slideStorage, list<Slide *> &finishedSlides, bool useStorage) const
 {
 	auto allSlides = slideStorage.getAllSlides();
 
 	cout << "Slides to sort: " << to_string(allSlides.size()) << endl;
 
 	auto currentSlide = *allSlides.begin();
-	finishSlide(slideStorage, finishedSlides, allSlides, currentSlide);
+	finishSlide(slideStorage, finishedSlides, allSlides, currentSlide, useStorage);
 
 	auto initialSize = allSlides.size();
 	auto lastPercent = 0;
 	auto slideNumber = 0.0;
 
 	while (!allSlides.empty()) {
-
 		list<Slide *> slidesForLookup;
-		if(tagCount > 1000) {
+		if(useStorage) {
 			slidesForLookup = slideStorage.getSlidesForTags(currentSlide->tags());
 		} else {
 			slidesForLookup = allSlides;
@@ -60,7 +60,7 @@ void Solver::bringSlidesInOrder(SlideStorage &slideStorage, list<Slide *> &finis
 			currentSlide = getMatchingSlide(slidesForLookup, currentSlide);
 		}
 
-		finishSlide(slideStorage, finishedSlides, allSlides, currentSlide);
+		finishSlide(slideStorage, finishedSlides, allSlides, currentSlide, useStorage);
 
 		slideNumber++;
 		auto percent = static_cast<int>(round(slideNumber / initialSize * 100));
@@ -71,11 +71,13 @@ void Solver::bringSlidesInOrder(SlideStorage &slideStorage, list<Slide *> &finis
 	}
 }
 
-void Solver::finishSlide(SlideStorage &slideStorage, list<Slide *> &finishedSlides, list<Slide *> &allSlides, Slide * currentSlide) const
+void Solver::finishSlide(SlideStorage &slideStorage, list<Slide *> &finishedSlides, list<Slide *> &allSlides, Slide *currentSlide, bool useStorage) const
 {
 	finishedSlides.push_back(currentSlide);
-	slideStorage.remove(currentSlide);
 	allSlides.remove(currentSlide);
+	if(useStorage) {
+		slideStorage.remove(currentSlide);
+	}
 }
 
 Slide* Solver::getMatchingSlide(list<Slide*> &slides, const Slide *currentSlide) const
@@ -119,33 +121,27 @@ void Solver::addVerticalPhotosToSlides(list<Photo> &photos, SlideStorage &slideS
 	auto iterator = photos.begin();
 	while (iterator != photos.end()) {
 		auto currentPhoto = *iterator;
-		auto matchingVerticalPhoto = getMatchingVerticalPhotoWithMaxUnitTags(photos, currentPhoto);
+		auto matchingVerticalPhoto = getMatchingVerticalPhoto(photos, currentPhoto);
 		slideStorage.add(new Slide(currentPhoto, *matchingVerticalPhoto, tagCount));
-		photos.erase(matchingVerticalPhoto);
+		photos.erase(next(matchingVerticalPhoto).base());
 		iterator = photos.erase(iterator);
 	}
 }
 
-list<Photo, std::allocator<Photo>>::iterator Solver::getMatchingVerticalPhotoWithMaxUnitTags(list<Photo> &photos, const Photo &firstPhoto) const
+photoInListIterator Solver::getMatchingVerticalPhoto(list<Photo> &photos, const Photo &firstPhoto) const
 {
-	auto innerIterator = photos.begin();
-	auto maxUniqueTags = innerIterator->tagCount();
-	auto matchingEntry = innerIterator;
-	while (innerIterator != photos.end()) {
-		if(maxUniqueTags >= innerIterator->tagCount() + firstPhoto.tagCount()) {
-			return matchingEntry;
-		}
-
-		if (innerIterator->orientation() == Orientation::Vertical) {
+	auto iterator = photos.rbegin();
+	auto matchingEntry = iterator;
+	while (iterator != photos.rend()) {
+		if (iterator->orientation() == Orientation::Vertical) {
 			set<int> mergedTags;
-			set_union(innerIterator->tags().begin(), innerIterator->tags().end(), firstPhoto.tags().begin(), firstPhoto.tags().end(), inserter(mergedTags, mergedTags.begin()));
+			set_union(iterator->tags().begin(), iterator->tags().end(), firstPhoto.tags().begin(), firstPhoto.tags().end(), inserter(mergedTags, mergedTags.begin()));
 
-			if (mergedTags.size() > maxUniqueTags) {
-				maxUniqueTags = static_cast<int>(mergedTags.size());
-				matchingEntry = innerIterator;
+			if (mergedTags.size() == iterator->tagCount() + firstPhoto.tagCount()) {
+				return iterator;
 			}
 		}
-		innerIterator++;
+		iterator++;
 	}
 
 	return matchingEntry;
